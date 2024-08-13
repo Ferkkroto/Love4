@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A La Musa de Mi Corazón</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #2c3e50, #4c4b63); /* Fondo más oscuro */
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Amatic SC', cursive;
+            color: #f7f1e3; /* Color de texto claro para mantener el contraste */
+        }
+        
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .welcome-screen img {
+            width: 200px; /* Ajusta el tamaño según sea necesario */
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .password-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 3;
+        }
+        .password-screen button {
+            font-size: 18px;
+            padding: 6px 12px;
+            background-color: #e60cd0; /* Color de botón que contrasta */
+            color: #f7f1e3;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .password-screen input {
+            font-size: 24px;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .heart-container, .message, .image-container, .hearts-container, .angels-container, .special-message, .incorrect-password-screen, .loading-screen {
+            display: none;
+        }
+
+        .heart-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: none;
+            z-index: 2;
+        }
+
+        .heart {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            transform: rotate(-45deg);
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -50px;
+        }
+
+        .heart.left {
+            left: 50%;
+            transform-origin: right bottom;
+        }
+
+        .heart.right {
+            right: 50%;
+            transform-origin: left bottom;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -50px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: 50px;
+        }
+        .heart::before,
+        .heart::after,
+        .heart {
+            transform: rotate(-45deg);
+            border-radius: 50% 50% 0 0;
+        }        
+
+        .message {
+            opacity: 0;
+            text-align: center;
+            font-size: 24px;
+            font-family: 'Amatic SC', cursive;
+            color: #333;
+            margin-top: 20px;
+            animation: showMessage 1s 2s forwards;
+            background-color: rgba(201, 174, 174, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+            display: none;
+            z-index: 2;
+        }
+
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            display: none;
+            z-index: 1;
+            gap: 10px;
+        }
+
+        .image-container img {
+            width: 100px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
+
+        .image-container img:nth-child(1) {
+            animation-delay: 1s;
+        }
+
+        .image-container img:nth-child(2) {
+            animation-delay: 3s;
+        }
+
+        .image-container img:nth-child(3) {
+            animation-delay: 5s;
+        }
+
+        .image-container img:nth-child(4) {
+            animation-delay: 7s;
+        }
+
+        .image-container img:nth-child(5) {
+            animation-delay: 9s;
+        }
+
+        .image-container img:nth-child(6) {
+            animation-delay: 11s;
+        }
+
+        .image-container img:nth-child(7) {
+            animation-delay: 13s;
+        }
+
+        .love-message {
+            font-size: 48px;
+            color: rgba(93, 223, 13, 0.856);
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            opacity: 1;
+        }
+
+        .special-message {
+            font-size: 20px;
+            color: #333;
+            margin-top: 20px;
+            display: none;
+            opacity: 0;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            line-height: 1.6;
+            letter-spacing: 1px;
+            background-color: rgba(201, 174, 174, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+        }
+
+        .special-message span {
+            display: inline-block;
+            opacity: 0;
+            animation: fadeInLetter 1s forwards;
+            margin-right: 1px;
+        }
+
+        .hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .heart-arrow {
+            position: absolute;
+            bottom: 0;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50% 50% 0 0;
+            transform: rotate(-45deg);
+            animation: floatHeart 15s infinite ease-in-out;
+        }
+
+        .heart-arrow::before,
+        .heart-arrow::after {
+            content: '';
+            position: absolute;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .heart-arrow::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 0;
+        }
+
+        .heart-arrow::after {
+            width: 50px;
+            height: 50px;
+            top: 0;
+            left: 25px;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 2px;
+            height: 50px;
+            background-color: red;
+            transform: rotate(45deg);
+            top: 12px;
+            left: 12px;
+        }
+
+        .arrow::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 10px solid red;
+            top: -10px;
+            left: -4px;
+        }
+
+        .angels-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .angel {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-image: url('img/Angel.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: floatAngel 10s infinite ease-in-out;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatAngel {
+            0% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeInLetter {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes openHeart {
+            0% {
+                transform: rotate(-45deg);
+            }
+            50% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(45deg);
+            }
+        }
+
+        @keyframes showMessage {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Estilos y animaciones para las letras flotantes */
+        .floating-letters-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            display: none; /* Oculto inicialmente */
+            justify-content: center;
+            flex-wrap: wrap;
+            z-index: 4; /* Asegúrate de que esté encima de otros elementos */
+            pointer-events: none; /* Para que no interfiera con otros elementos clicables */
+        }
+
+        .floating-letter {
+            font-size: 24px;
+            color: rgba(93, 223, 13, 0.856);
+            margin: 0 5px;
+            animation: floatUp 5s infinite ease-in-out;
+        }
+
+        .floating-phrase {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .incorrect-password-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 4;
+        }
+
+        .incorrect-password-screen img {
+            width: 80%; /* Ajusta el tamaño para dispositivos móviles y laptops */
+            max-width: 400px; /* Ajusta el tamaño máximo */
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .loading-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .loading-screen img {
+            width: 80px; /* Ajusta el tamaño del ícono de carga */
+            height: auto;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-screen p {
+            margin: 0;
+        }
+
+        /* Media queries para adaptabilidad */
+        @media (max-width: 768px) {
+            .welcome-screen {
+                font-size: 18px;
+            }
+
+            .password-screen input {
+                font-size: 18px;
+            }
+
+            .message {
+                font-size: 20px;
+                padding: 20px;
+            }
+
+            .special-message {
+                font-size: 16px;
+                padding: 20px;
+            }
+
+            .love-message {
+                font-size: 36px;
+            }
+
+            .heart-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .heart {
+                width: 75px;
+                height: 75px;
+            }
+
+            .image-container img {
+                width: 75px;
+            }
+
+            .angel {
+                width: 45px;
+                height: 45px;
+            }
+
+            .heart-arrow {
+                width: 37.5px;
+                height: 37.5px;
+            }
+
+            .heart-arrow::before,
+            .heart-arrow::after {
+                width: 37.5px;
+                height: 37.5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-screen {
+                font-size: 16px;
+            }
+
+            .password-screen input {
+                font-size: 16px;
+            }
+
+            .message {
+                font-size: 18px;
+                padding: 15px;
+            }
+
+            .special-message {
+                font-size: 14px;
+                padding: 15px;
+            }
+
+            .love-message {
+                font-size: 30px;
+            }
+
+            .heart-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .heart {
+                width: 60px;
+                height: 60px;
+            }
+
+            .image-container img {
+                width: 60px;
+            }
+
+            .angel {
+                width: 36px;
+                height: 36px;
+            }
+
+            .heart-arrow {
+                width: 30px;
+                height: 30px;
+            }
+
+            .heart-arrow::before,
+            .heart-arrow::after {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-screen" onclick="showPasswordScreen()">
+        <img src="descarga.jpeg" alt="Imagen de bienvenida"> <!-- Imagen de bienvenida -->
+        Presiona Aqui bonita.
+    </div>
+
+    <div class="password-screen">
+    <p>Por favor, introduce la contraseña:</p>
+    <input type="password" id="password" placeholder="Llave secreta">
+    <button onclick="checkPassword()">Abre la sorpresa</button>
+    <p class="romantic-message">Me gustas mucho </p>
+</div>
+
+
+
+    <div class="heart-container">
+        <div class="heart left"></div>
+        <div class="heart right"></div>
+    </div>
+    <div class="message">
+        Te amo mucho, Abiss <br>
+        "Desde que te conocí, me di cuenta de que hay personas que iluminan la vida de otras solo con su sonrisa, <br>
+        y tú eres una de ellas."<br>
+    </div>
+
+    <div class="image-container">
+        <img src="imagen1.jpeg" alt="Imagen 1">
+        <img src="imagen2.jpeg" alt="Imagen 2">
+        <img src="imagen3.jpeg" alt="Imagen 3">
+        <img src="imagen4.jpeg" alt="Imagen 4">
+        <img src="imagen5.jpeg" alt="Imagen 5">
+        <img src="imagen6.jpeg" alt="Imagen 6">
+    </div>
+    
+    <div class="love-message">Te amo</div>
+    
+    <div class="special-message" id="special-message">
+        Nos conocemos desde hace poco, pero ya valoro mucho nuestro tiempo juntos. Quiero seguir explorando esto contigo.
+    </div>
+    
+
+    <div class="hearts-container">
+        <div class="heart-arrow" style="left: 10%; animation-delay: 0s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 20%; animation-delay: 2s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 30%; animation-delay: 4s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 40%; animation-delay: 6s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 50%; animation-delay: 8s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 60%; animation-delay: 10s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 70%; animation-delay: 12s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 80%; animation-delay: 14s;">
+            <div class="arrow"></div>
+        </div>
+        <div class="heart-arrow" style="left: 90%; animation-delay: 16s;">
+            <div class="arrow"></div>
+        </div>
+    </div>
+
+    <div class="angels-container">
+        <div class="angel" style="left: 15%; animation-delay: 1s;"></div>
+        <div class="angel" style="left: 25%; animation-delay: 3s;"></div>
+        <div class="angel" style="left: 35%; animation-delay: 5s;"></div>
+        <div class="angel" style="left: 45%; animation-delay: 7s;"></div>
+        <div class="angel" style="left: 55%; animation-delay: 9s;"></div>
+        <div class="angel" style="left: 65%; animation-delay: 11s;"></div>
+        <div class="angel" style="left: 75%; animation-delay: 13s;"></div>
+        <div class="angel" style="left: 85%; animation-delay: 15s;"></div>
+    </div>
+    
+    <div class="floating-letters-container">
+        <div class="floating-phrase">
+            <span class="floating-letter">E</span>
+            <span class="floating-letter">r</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter">s</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">l</span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">n</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">ñ</span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">q</span>
+            <span class="floating-letter">u</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">s</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter">m</span>
+            <span class="floating-letter">p</span>
+            <span class="floating-letter">r</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">h</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">q</span>
+            <span class="floating-letter">u</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter">r</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">d</span>
+            <span class="floating-letter">o</span>
+        </div>
+        <div class="floating-phrase">
+            <span class="floating-letter">L</span>
+            <span class="floating-letter">l</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter">g</span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter">s</span>
+            <span class="floating-letter">t</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">m</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">v</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">d</span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">d</span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter">r</span>
+            <span class="floating-letter">l</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">s</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter">n</span>
+            <span class="floating-letter">t</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">d</span>
+            <span class="floating-letter">o</span>
+        </div>
+        <div class="floating-phrase">
+            <span class="floating-letter">T</span>
+            <span class="floating-letter">e</span>
+            <span class="floating-letter"> </span>
+            <span class="floating-letter">a</span>
+            <span class="floating-letter">m</span>
+            <span class="floating-letter">o</span>
+        </div>
+        <div class="floating-phrase">
+            <span class="floating-letter">A</span>
+            <span class="floating-letter">b</span>
+            <span class="floating-letter">i</span>
+            <span class="floating-letter">s</span>
+        </div>
+    </div>
+
+    <div class="incorrect-password-screen" id="incorrect-password-screen">
+        <img src="gato.jpeg" alt="Imagen incorrecta">
+        <p>Usted no tiene las llaves de mi corazón.</p>
+    </div>
+
+    <div class="loading-screen" id="loading-screen">
+         <img src="loading.jpeg" alt="Imagen ">
+        <p>Cargando...</p>
+    </div>
+
+    <audio id="audio">
+        <source src="audio.mp3" type="audio/mpeg">
+        Tu navegador no soporta la etiqueta de audio.
+    </audio>
+    <script>
+        function showPasswordScreen() {
+            document.querySelector('.welcome-screen').style.display = 'none';
+            document.querySelector('.password-screen').style.display = 'flex';
+        }
+
+        function checkPassword() {
+            var password = document.getElementById('password').value;
+            if (password === 'Abiss') {
+                showLoadingScreen();
+            } else {
+                showIncorrectPasswordScreen();
+            }
+        }
+
+        function showIncorrectPasswordScreen() {
+            document.querySelector('.password-screen').style.display = 'none';
+            document.getElementById('incorrect-password-screen').style.display = 'flex';
+
+            setTimeout(function() {
+                document.getElementById('incorrect-password-screen').style.display = 'none';
+                document.querySelector('.password-screen').style.display = 'flex';
+            }, 5000);
+        }
+
+        function showLoadingScreen() {
+            document.querySelector('.password-screen').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'flex';
+
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.display = 'none';
+                showWelcomeMessage();
+            }, 3000); // 3 segundos de carga
+        }
+
+        function showWelcomeMessage() {
+            var specialMessageContainer = document.createElement('div');
+            specialMessageContainer.className =  'special-message';
+            specialMessageContainer.innerHTML = "¡Bienvenida, mi amor! Eres la luz de mi vida y mi felicidad. Te amo.";
+            document.body.appendChild(specialMessageContainer);
+            specialMessageContainer.style.display = 'flex';
+            specialMessageContainer.style.opacity = '1';
+
+            setTimeout(function() {
+                document.body.removeChild(specialMessageContainer);
+                startExperience();
+            }, 5000); // Mostrar el mensaje durante 5 segundos
+        }
+
+        function startExperience() {
+            var audio = document.getElementById('audio');
+            audio.play();
+
+            document.querySelector('.heart-container').style.display = 'block';
+            document.querySelector('.message').style.display = 'block';
+            document.querySelector('.message').style.opacity = '1';
+            document.querySelector('.image-container').style.display = 'flex';
+
+            document.querySelector('.hearts-container').style.display = 'flex';
+            document.querySelector('.angels-container').style.display = 'flex';
+            document.querySelector('.floating-letters-container').style.display = 'flex'; // Mostrar las letras flotantes
+
+            setTimeout(function() {
+                var loveMessage = document.querySelector('.love-message');
+                loveMessage.style.opacity = '0';
+                loveMessage.style.zIndex = '0';
+            }, 10000);
+
+            setTimeout(function() {
+                var floatingLettersContainer = document.querySelector('.floating-letters-container');
+                floatingLettersContainer.style.display = 'none'; // Ocultar letras flotantes
+
+                var specialMessageContainer = document.getElementById('special-message');
+                specialMessageContainer.style.display = 'flex';
+                specialMessageContainer.style.opacity = '1';
+            }, 11000);
+        }
+    </script>
+</body>
+</html>
